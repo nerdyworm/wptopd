@@ -9,18 +9,36 @@ Author URI: http://nerdyworm.com
 License:
 */
 
+function wptopd_create_person($api_token, $person) {
+  $url = "https://api.pipedrive.com/v1/persons?api_token=" . $api_token;
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_POST, true);
+  curl_setopt($ch, CURLOPT_POSTFIELDS, $person);
+  curl_close($ch);
+}
+
 function wptopd_widget($args) {
 ?>
 
 <div id="wptopd">
-  <?php if($_GET['wptopd-saved'] == 'true') { ?>
+  <?php if($_POST['wptopd'] == 'true') {
+    $token = get_option("wptopd_api_token");
+    $person = array(
+      'name'  => $_POST['wptopd-name'],
+      'email' => $_POST['wptopd-email'],
+      'phone' => $_POST['wptopd-phone']
+    );
+    wptopd_create_person($token, $person); ?>
 
   <div class="wptopd-thank-you">
     <?php echo get_option("wptopd_thank_you") ?>
   </div>
 
   <?php  } else { ?>
-  <form action="<?php echo get_option('siteurl') ?>/wp-content/plugins/wptopd/save.php" method="post" class="wptopd-form">
+  <form action="#" method="post" class="wptopd-form">
+    <input type="hidden" name="wptopd" value="true"/>
 
     <div class="wptopd-title">
       <?php echo get_option("wptopd_title") ?>
